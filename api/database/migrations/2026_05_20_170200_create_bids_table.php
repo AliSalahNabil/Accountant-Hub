@@ -15,7 +15,7 @@ return new class extends Migration
             $table->decimal('proposed_price', 12, 2);
             $table->unsignedSmallInteger('delivery_days');
             $table->text('cover_letter');
-            $table->text('experience_summary')->nullable();
+            $table->text('experience_summary');
             $table->enum('status', ['pending', 'accepted', 'rejected', 'withdrawn'])->default('pending');
             $table->timestamps();
 
