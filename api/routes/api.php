@@ -8,9 +8,11 @@ use App\Http\Controllers\Api\JobController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // Public auth
-    Route::post('auth/register', [AuthController::class, 'register']);
-    Route::post('auth/login',    [AuthController::class, 'login']);
+    // Public auth — throttled to slow down brute-force attempts.
+    Route::middleware('throttle:10,1')->group(function () {
+        Route::post('auth/register', [AuthController::class, 'register']);
+        Route::post('auth/login',    [AuthController::class, 'login']);
+    });
 
     // Public catalog
     Route::get('categories', [JobCategoryController::class, 'index']);

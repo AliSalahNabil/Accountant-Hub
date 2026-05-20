@@ -16,7 +16,7 @@ import { ApplyButton } from "@/components/jobs/apply-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardBody } from "@/components/ui/card";
 import { ApiError, jobsApi } from "@/lib/api";
-import { formatBudgetRange, pluralize } from "@/lib/utils";
+import { formatBudgetRange, formatDate, pluralize } from "@/lib/utils";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -238,10 +238,3 @@ function Stat({
   );
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}

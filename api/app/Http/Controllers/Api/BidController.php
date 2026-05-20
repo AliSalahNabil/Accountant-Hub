@@ -30,12 +30,14 @@ class BidController extends Controller
             ], Response::HTTP_CONFLICT);
         }
 
+        $data = $request->validated();
+
         $bid = $job->bids()->create([
             'user_id'            => $request->user()->id,
-            'proposed_price'     => $request->float('proposed_price'),
-            'delivery_days'      => $request->integer('delivery_days'),
-            'cover_letter'       => $request->string('cover_letter'),
-            'experience_summary' => $request->string('experience_summary')->toString() ?: null,
+            'proposed_price'     => $data['proposed_price'],
+            'delivery_days'      => $data['delivery_days'],
+            'cover_letter'       => $data['cover_letter'],
+            'experience_summary' => $data['experience_summary'],
         ]);
 
         return response()->json([

@@ -57,6 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Bootstrap auth from the cookie/storage on mount — this *is* syncing with an
+    // external system (HTTP cookie + remote /me), exactly the use case the React docs
+    // allow for setState-in-effect. The new lint rule is a false positive here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
   }, [refresh]);
 

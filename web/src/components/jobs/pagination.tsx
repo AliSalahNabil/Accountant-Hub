@@ -34,19 +34,18 @@ export function Pagination({ currentPage, lastPage }: Props) {
         Page <span className="font-medium text-ink">{currentPage}</span> of {lastPage}
       </div>
       <div className="flex items-center gap-1">
-        <PageLink
-          href={buildHref(Math.max(1, currentPage - 1))}
-          disabled={currentPage === 1}
+        <PageControl
+          href={currentPage === 1 ? null : buildHref(currentPage - 1)}
           aria-label="Previous page"
         >
           <ChevronLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Previous</span>
-        </PageLink>
+        </PageControl>
 
         <div className="hidden sm:flex items-center gap-1">
           {pages.map((p, i) =>
             p === "…" ? (
-              <span key={`gap-${i}`} className="px-2 text-muted-foreground">
+              <span key={`gap-${i}`} className="px-2 text-muted-foreground" aria-hidden>
                 …
               </span>
             ) : (
@@ -60,6 +59,7 @@ export function Pagination({ currentPage, lastPage }: Props) {
                     : "border-border bg-white text-ink hover:bg-muted",
                 )}
                 aria-current={p === currentPage ? "page" : undefined}
+                aria-label={`Go to page ${p}`}
               >
                 {p}
               </Link>
@@ -67,45 +67,44 @@ export function Pagination({ currentPage, lastPage }: Props) {
           )}
         </div>
 
-        <PageLink
-          href={buildHref(Math.min(lastPage, currentPage + 1))}
-          disabled={currentPage === lastPage}
+        <PageControl
+          href={currentPage === lastPage ? null : buildHref(currentPage + 1)}
           aria-label="Next page"
         >
           <span className="hidden sm:inline">Next</span>
           <ChevronRight className="h-4 w-4" />
-        </PageLink>
+        </PageControl>
       </div>
     </nav>
   );
 }
 
-function PageLink({
+function PageControl({
   href,
-  disabled,
   children,
   ...rest
 }: {
-  href: string;
-  disabled?: boolean;
+  href: string | null;
   children: React.ReactNode;
-} & React.ComponentProps<"a">) {
-  if (disabled) {
+} & Pick<React.HTMLAttributes<HTMLElement>, "aria-label">) {
+  const className =
+    "inline-flex h-9 items-center gap-1 rounded-md border border-border px-3 text-sm";
+
+  if (href === null) {
     return (
-      <span
+      <button
+        type="button"
+        disabled
+        className={cn(className, "bg-white text-stone-400 opacity-60")}
         {...rest}
-        className="inline-flex h-9 items-center gap-1 rounded-md border border-border bg-white px-3 text-sm text-stone-400 opacity-60"
       >
         {children}
-      </span>
+      </button>
     );
   }
+
   return (
-    <Link
-      {...rest}
-      href={href}
-      className="inline-flex h-9 items-center gap-1 rounded-md border border-border bg-white px-3 text-sm text-ink hover:bg-muted"
-    >
+    <Link href={href} className={cn(className, "bg-white text-ink hover:bg-muted")} {...rest}>
       {children}
     </Link>
   );

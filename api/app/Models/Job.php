@@ -44,8 +44,6 @@ class Job extends Model
         'deadline'        => 'date',
     ];
 
-    protected $appends = ['bids_count'];
-
     protected static function booted(): void
     {
         static::saving(function (self $job) {
@@ -72,15 +70,6 @@ class Job extends Model
         return $this->hasMany(Bid::class);
     }
 
-    public function getBidsCountAttribute(): int
-    {
-        if (array_key_exists('bids_count', $this->relations) || $this->relationLoaded('bids')) {
-            return $this->bids->count();
-        }
-
-        return (int) ($this->attributes['bids_count'] ?? $this->bids()->count());
-    }
-
     public function scopeOpen(Builder $query): Builder
     {
         return $query->where('status', self::STATUS_OPEN);
@@ -92,7 +81,9 @@ class Job extends Model
             return $query;
         }
 
-        $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $term) . '%';
+        // Sanitize LIKE wildcards in the user input, then anchor the search with our own wildcards.
+        $sanitized = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term);
+        $like = '%' . $sanitized . '%';
 
         return $query->where(function (Builder $q) use ($like) {
             $q->where('title', 'like', $like)

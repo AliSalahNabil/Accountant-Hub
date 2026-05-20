@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError, bidsApi, dashboardApi } from "@/lib/api";
@@ -35,6 +36,7 @@ export function DashboardView() {
   const [state, setState] = useState<State>({ kind: "loading" });
   const [page, setPage] = useState(1);
   const [withdrawing, setWithdrawing] = useState<number | null>(null);
+  const [confirmBid, setConfirmBid] = useState<ApiBid | null>(null);
 
   const load = useCallback(
     async (nextPage = page) => {
@@ -69,15 +71,17 @@ export function DashboardView() {
       router.replace("/login?next=/dashboard");
       return;
     }
+    // Sync state from the API (external system) after auth resolves / page changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load(page);
   }, [status, load, page, router]);
 
   const handleWithdraw = async (bid: ApiBid) => {
-    if (!confirm("Withdraw this bid? The client will no longer see it.")) return;
     setWithdrawing(bid.id);
     try {
       await bidsApi.withdraw(bid.id);
       toast.success("Bid withdrawn.");
+      setConfirmBid(null);
       await load();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Could not withdraw.";
@@ -203,7 +207,7 @@ export function DashboardView() {
               <BidRow
                 key={bid.id}
                 bid={bid}
-                onWithdraw={() => handleWithdraw(bid)}
+                onWithdraw={() => setConfirmBid(bid)}
                 withdrawing={withdrawing === bid.id}
               />
             ))}
@@ -234,6 +238,21 @@ export function DashboardView() {
           </div>
         ) : null}
       </section>
+
+      <ConfirmDialog
+        open={confirmBid !== null}
+        onClose={() => {
+          if (!withdrawing) setConfirmBid(null);
+        }}
+        onConfirm={async () => {
+          if (confirmBid) await handleWithdraw(confirmBid);
+        }}
+        title="Withdraw this bid?"
+        description="The client will no longer see your proposal. This cannot be undone."
+        confirmLabel="Yes, withdraw"
+        cancelLabel="Keep bid"
+        loading={withdrawing !== null}
+      />
     </div>
   );
 }

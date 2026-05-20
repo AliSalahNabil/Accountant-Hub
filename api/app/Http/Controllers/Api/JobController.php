@@ -17,6 +17,15 @@ class JobController extends Controller
             ->with(['category'])
             ->withCount('bids');
 
+        // If the request is authenticated via Sanctum, eager-mark "my bid" status
+        // with a single SQL EXISTS to avoid N+1 in the listing.
+        $user = auth('sanctum')->user();
+        if ($user) {
+            $query->withExists([
+                'bids as has_my_bid' => fn ($q) => $q->where('user_id', $user->id),
+            ]);
+        }
+
         $status = $request->input('status', 'open');
         if ($status !== 'all') {
             $query->where('status', $status);
@@ -47,12 +56,18 @@ class JobController extends Controller
 
     public function show(Request $request, string $slug): JobResource
     {
-        $job = Job::query()
+        $query = Job::query()
             ->where('slug', $slug)
             ->with(['category'])
-            ->withCount('bids')
-            ->firstOrFail();
+            ->withCount('bids');
 
-        return JobResource::make($job);
+        $user = auth('sanctum')->user();
+        if ($user) {
+            $query->withExists([
+                'bids as has_my_bid' => fn ($q) => $q->where('user_id', $user->id),
+            ]);
+        }
+
+        return JobResource::make($query->firstOrFail());
     }
 }

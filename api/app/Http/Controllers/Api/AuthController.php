@@ -16,11 +16,13 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        $data = $request->validated();
+
         $user = User::create([
-            'name'     => $request->string('name'),
-            'email'    => $request->string('email'),
-            'password' => $request->string('password'),
-            'headline' => $request->string('headline')->toString() ?: null,
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => Hash::make($data['password']),
+            'headline' => $data['headline'] ?? null,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -33,9 +35,11 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->string('email'))->first();
+        $data = $request->validated();
 
-        if (! $user || ! Hash::check($request->string('password'), $user->password)) {
+        $user = User::where('email', $data['email'])->first();
+
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['These credentials do not match our records.'],
             ]);
@@ -51,7 +55,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()?->delete();
 
         return response()->json(['message' => 'Logged out successfully.']);
     }

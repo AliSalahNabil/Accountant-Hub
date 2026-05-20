@@ -3,7 +3,7 @@ import { Briefcase, CalendarClock, Clock, MapPin, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import type { ApiJob } from "@/lib/types";
-import { formatBudgetRange, pluralize, truncate } from "@/lib/utils";
+import { formatBudgetRange, formatDate, pluralize, truncate } from "@/lib/utils";
 
 export function JobCard({ job }: { job: ApiJob }) {
   return (
@@ -16,7 +16,13 @@ export function JobCard({ job }: { job: ApiJob }) {
         <Badge variant={job.is_open ? "brand" : "muted"}>
           {job.is_open ? "Open" : "Closed"}
         </Badge>
-        <span className="text-xs text-muted-foreground">{job.posted_human}</span>
+        <time
+          dateTime={job.posted_at}
+          title={formatDate(job.posted_at, { month: "long", day: "numeric", year: "numeric" })}
+          className="text-xs text-muted-foreground"
+        >
+          Posted {job.posted_human}
+        </time>
       </div>
 
       <h3 className="mt-3 line-clamp-2 text-base font-semibold text-ink group-hover:text-brand-700">
@@ -28,7 +34,7 @@ export function JobCard({ job }: { job: ApiJob }) {
         {job.company.location ? (
           <span className="inline-flex items-center gap-1 text-muted-foreground">
             <span className="mx-1.5 text-stone-300">•</span>
-            <MapPin className="h-3.5 w-3.5" />
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
             {job.company.location}
           </span>
         ) : null}
@@ -57,35 +63,39 @@ export function JobCard({ job }: { job: ApiJob }) {
       ) : null}
 
       <div className="mt-5 flex flex-1 flex-col justify-end border-t border-border pt-4">
-        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <Briefcase className="h-3.5 w-3.5" />
-            {job.category.name}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            {job.bids_count} {pluralize(job.bids_count, "bid")}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" />
-            {job.delivery_days} days
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <CalendarClock className="h-3.5 w-3.5" />
-            Due {formatDate(job.deadline)}
-          </span>
-        </div>
+        <dl className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+          <div className="inline-flex items-center gap-1.5">
+            <Briefcase className="h-3.5 w-3.5" aria-hidden />
+            <dt className="sr-only">Category</dt>
+            <dd>{job.category.name}</dd>
+          </div>
+          <div className="inline-flex items-center gap-1.5">
+            <Users className="h-3.5 w-3.5" aria-hidden />
+            <dt className="sr-only">Bids</dt>
+            <dd>
+              {job.bids_count} {pluralize(job.bids_count, "bid")}
+            </dd>
+          </div>
+          <div className="inline-flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" aria-hidden />
+            <dt className="sr-only">Delivery</dt>
+            <dd>{job.delivery_days} days</dd>
+          </div>
+          <div className="inline-flex items-center gap-1.5">
+            <CalendarClock className="h-3.5 w-3.5" aria-hidden />
+            <dt className="sr-only">Deadline</dt>
+            <dd>
+              Due{" "}
+              <time dateTime={job.deadline}>
+                {formatDate(job.deadline, { month: "short", day: "numeric", year: "numeric" })}
+              </time>
+            </dd>
+          </div>
+        </dl>
         <p className="mt-3 text-sm font-semibold text-ink">
           {formatBudgetRange(job.budget.min, job.budget.max, job.budget.currency)}
         </p>
       </div>
     </Link>
   );
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }

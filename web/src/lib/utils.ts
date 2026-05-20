@@ -31,6 +31,16 @@ export function truncate(text: string, n: number) {
   return text.length > n ? text.slice(0, n - 1).trimEnd() + "…" : text;
 }
 
+export function formatDate(
+  iso: string | null | undefined,
+  options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", year: "numeric" },
+): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-US", options);
+}
+
 export function initials(name: string) {
   return name
     .trim()

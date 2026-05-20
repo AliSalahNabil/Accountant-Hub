@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -33,12 +34,15 @@ class JobResource extends JsonResource
             'deadline'          => $this->deadline?->toDateString(),
             'attachments'       => $this->attachments ?? [],
             'status'            => $this->status,
-            'is_open'           => $this->status === \App\Models\Job::STATUS_OPEN,
-            'category'          => new JobCategoryResource($this->whenLoaded('category')),
+            'is_open'           => $this->status === Job::STATUS_OPEN,
+            'category'          => $this->whenLoaded(
+                'category',
+                fn () => new JobCategoryResource($this->category),
+            ),
             'bids_count'        => (int) ($this->bids_count ?? 0),
             'has_my_bid'        => $this->when(
-                $request->user() !== null,
-                fn () => $this->bids()->where('user_id', $request->user()->id)->exists(),
+                ! is_null($this->getAttribute('has_my_bid')),
+                fn () => (bool) $this->getAttribute('has_my_bid'),
             ),
             'posted_at'         => $this->created_at?->toIso8601String(),
             'posted_human'      => $this->created_at?->diffForHumans(),

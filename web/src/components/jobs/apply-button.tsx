@@ -22,6 +22,7 @@ export function ApplyButton({ job }: { job: ApiJob }) {
   // whether the current user already submitted a bid on this job.
   useEffect(() => {
     if (status !== "authenticated") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasMyBid(false);
       return;
     }
@@ -104,7 +105,7 @@ export function ApplyButton({ job }: { job: ApiJob }) {
   return (
     <>
       <Button className="w-full" size="lg" onClick={() => setOpen(true)}>
-        Apply / Submit bid
+        Submit a bid
       </Button>
       <Modal
         open={open}

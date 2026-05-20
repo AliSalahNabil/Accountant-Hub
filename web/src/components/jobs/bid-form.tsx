@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -28,7 +28,10 @@ const schema = z.object({
     .string()
     .min(30, "Cover letter must be at least 30 characters")
     .max(5000, "Cover letter is too long"),
-  experience_summary: z.string().max(2000, "Too long").optional(),
+  experience_summary: z
+    .string()
+    .min(20, "Briefly describe your relevant experience (at least 20 characters)")
+    .max(2000, "Too long"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -51,7 +54,7 @@ export function BidForm({
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    watch,
+    control,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -62,7 +65,7 @@ export function BidForm({
     },
   });
 
-  const coverLetter = watch("cover_letter") ?? "";
+  const coverLetter = useWatch({ control, name: "cover_letter" }) ?? "";
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
@@ -181,7 +184,8 @@ export function BidForm({
       <Field
         label="Relevant experience"
         htmlFor="experience_summary"
-        hint="Optional · briefly list past similar work"
+        required
+        hint="Briefly list past similar work — helps clients trust your proposal"
         error={errors.experience_summary?.message}
       >
         <Textarea
