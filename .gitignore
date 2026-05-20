@@ -1,0 +1,19 @@
+# Root-level ignores (each app has its own .gitignore too)
+
+# Tools (local PHP runtime, don't commit)
+tools/
+
+# Screenshots automation outputs are fine to commit
+# /screenshots is kept
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
