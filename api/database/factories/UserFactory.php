@@ -29,7 +29,14 @@ class UserFactory extends Factory
                 'Audit & Assurance Expert',
                 'Payroll & HR Accountant',
             ]),
-            'bio'                 => fake()->paragraph(3),
+            'bio'                 => fake()->randomElement([
+                'Experienced accountant focused on US small-business bookkeeping, monthly close, and tax preparation. QuickBooks ProAdvisor since 2018.',
+                'CPA with a decade of public accounting experience. I specialize in audit support, SOC 1/2 readiness, and IFRS conversions for mid-market clients.',
+                'Tax specialist serving freelancers and SMBs across the US. I file federal and multi-state returns, handle quarterly estimates, and resolve IRS notices.',
+                'I help fast-moving SaaS and e-commerce teams keep clean, audit-ready books. Strong in NetSuite, Xero, and revenue recognition under ASC 606.',
+                'Payroll and HR-ops accountant. I run multi-state bi-weekly payroll, manage 401(k) contributions, and own quarterly and year-end filings.',
+                'Forensic accountant supporting law firms and internal-investigation teams. Detail-oriented, discreet, and report-driven.',
+            ]),
             'skills'              => fake()->randomElements([
                 'QuickBooks', 'Xero', 'SAP', 'Excel', 'Tax Filing', 'Audit', 'IFRS', 'GAAP',
                 'Bookkeeping', 'Payroll', 'VAT', 'Financial Reporting', 'Reconciliation',

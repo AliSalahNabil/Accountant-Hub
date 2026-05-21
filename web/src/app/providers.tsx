@@ -11,6 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <Toaster
         position="top-right"
         richColors
+        duration={1000}
         toastOptions={{
           style: {
             borderRadius: "0.75rem",
