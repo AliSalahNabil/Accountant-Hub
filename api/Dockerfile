@@ -16,9 +16,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Install PHP dependencies (cache layer)
+# Install PHP dependencies (cache layer).
+# We INCLUDE dev deps because the DatabaseSeeder uses faker (a dev dep) to
+# generate demo data on first boot. For a true production deploy without
+# seeding, switch back to --no-dev.
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+RUN composer install --no-scripts --no-autoloader --prefer-dist --no-interaction
 
 # Copy the rest of the app
 COPY . .
