@@ -1,0 +1,49 @@
+# Render.com infrastructure as code — one-click deploy
+# Usage: New + → Blueprint → connect this repo → Render reads this file.
+
+services:
+  - type: web
+    name: accountant-hub-api
+    runtime: docker
+    rootDir: api
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/v1/categories
+    autoDeploy: true
+    disk:
+      name: sqlite-data
+      mountPath: /app/database
+      sizeGB: 1
+    envVars:
+      - key: APP_NAME
+        value: "Accountant Hub"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false                # set manually after first deploy: https://<service>.onrender.com
+      - key: FRONTEND_URL
+        sync: false                # set manually after Vercel deploy: https://<project>.vercel.app
+      - key: APP_LOCALE
+        value: en
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /app/database/database.sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      - key: MAIL_MAILER
+        value: log
