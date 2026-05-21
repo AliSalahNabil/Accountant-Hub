@@ -18,7 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
+        // Pure bearer-token API — no Sanctum SPA session cookies, no CSRF.
+        // (statefulApi() would force CSRF protection on the /api/* routes when
+        //  the request originates from a SANCTUM_STATEFUL_DOMAINS host, which
+        //  breaks our token-only Next.js client.)
 
         // Laravel 13 defaults the guest redirect to route('login'), which throws
         // RouteNotFoundException for our pure-API app. Override it to null so the
