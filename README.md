@@ -67,9 +67,11 @@ This codebase was built as a **solo full-stack evaluation task**. It demonstrate
 
 | Resource | URL |
 |---|---|
-| 🌐 **Live web app** | *Coming soon — see [Deployment](#-deployment)* |
-| 🔌 **Live API** | *Coming soon* |
-| 📦 **GitHub repository** | *Coming soon* |
+| 🌐 **Live web app** | **https://accountant-hub-delta.vercel.app** |
+| 🔌 **Live API** | https://massive-rosabel-alisalahnabil-5b5d0c7a.koyeb.app/api/v1 |
+| 📦 **GitHub repository** | https://github.com/AliSalahNabil/Accountant-Hub |
+
+> ⏱️ **First load may take 30–60 seconds.** The API runs on a free Koyeb instance that sleeps when idle and wakes on demand. Subsequent requests are fast.
 
 ### Test Accountant Login
 
@@ -474,7 +476,7 @@ bids
 
 A reviewer can walk through the entire app in about 3 minutes:
 
-1. Open **http://localhost:3000** — landing page loads with live job counts.
+1. Open **https://accountant-hub-delta.vercel.app** — landing page loads with live job counts.
 2. Click **Browse jobs** → `/jobs` shows the listing with 23 open jobs.
 3. Try the filters: type "audit" in search, pick a category, click `$1k – $3k`, change sort to "Highest budget". Results update live.
 4. Click any job → details page shows full description, skills, attachments placeholder, bids count, sticky Apply card.
